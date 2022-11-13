@@ -1,0 +1,46 @@
+const cors = require('cors');
+const corsOptions ={
+     origin:'http://localhost:3000', 
+    credentials:true          
+}
+
+const auth = require('../src/auth');
+const articles = require('../src/articles');
+const following = require('../src/following');
+const profile = require('../src/profile');
+const express = require('express');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const mongoose = require('mongoose');
+const userSchema = require('../src/model/data').userSchema;
+const articleSchema = require('../src/model/data').articleSchema;
+const User = require('../src/model/data').Users;
+//mongodb+srv://admin:sara123@cluster0.pfunxzd.mongodb.net/social?retryWrites=true&w=majority
+
+const connectionString = "mongodb+srv://admin:sara123@cluster0.pfunxzd.mongodb.net/social?retryWrites=true&w=majority";
+
+const hello = (req, res) => res.send({ hello: 'world' });
+
+
+const app = express();
+var hateoasLinker = require('express-hateoas-links');
+const session = require("express-session");
+app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(cors(corsOptions));
+app.get('/', hello);
+//app.post('/users/:uname', addUser);
+app.use(hateoasLinker);
+
+auth(app);
+articles(app);
+profile(app);
+following(app);
+
+// Get the port from the environment, i.e., Heroku sets it
+const port = process.env.PORT || 3001;
+const server = app.listen(port, () => {
+     const addr = server.address();
+     console.log(`addrsess-------${addr.address}`)
+     console.log(`Server listening at http://${addr.address}:${addr.port}`)
+});
